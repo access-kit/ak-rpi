@@ -90,9 +90,16 @@ class SyncResponse(BaseModel):
     resReceivedAt: int
 
     @property
-    def offset(self):
+    def oneway_latency(self):
         """Get the offset between the server and the player."""
         round_trip = (self.resReceivedAt - self.reqSentAt) - (
             self.resSentAt - self.reqReceivedAt
         )
         return round_trip / 2
+
+    @property
+    def offset(self):
+        """Get the offset between the server and the player."""
+        expected_server_receipt_time = self.reqSentAt + self.oneway_latency
+        server_leads_by = self.reqReceivedAt - expected_server_receipt_time
+        return server_leads_by
