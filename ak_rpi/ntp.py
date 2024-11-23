@@ -1,10 +1,13 @@
 """A module for performing NTP sync."""
 
+import logging
 import time
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, ValidationError
 
 from ak_rpi.client import Client
+
+logger = logging.getLogger(__name__)
 
 
 def monotonic_time_ms():
@@ -38,6 +41,9 @@ class NTP(BaseModel):
         """Perform an NTP sync algorithm which will determine the offset between the server and the player."""
         res = [self.sync_cycle() for _ in range(self.n_cyles)]
         offsets: list[float] = [offset for offset in res if offset is not None]
+        if len(offsets) == 0:
+            logger.error("Failed to get any offsets.")
+            return self.server_time_offset
         average_offset = sum(offsets) / len(offsets)
         std_offset = sum((offset - average_offset) ** 2 for offset in offsets) / len(
             offsets
@@ -45,6 +51,9 @@ class NTP(BaseModel):
         non_outliers = [
             offset for offset in offsets if abs(offset - average_offset) < std_offset
         ]
+        if len(non_outliers) == 0:
+            logger.error("Failed to get any non-outliers.")
+            return self.server_time_offset
         average_offset_no_outliers = sum(non_outliers) / len(non_outliers)
         self.server_time_offset = int(average_offset_no_outliers)
         return int(average_offset_no_outliers)
@@ -55,9 +64,21 @@ class NTP(BaseModel):
         response = self.client.get_sync(local_time_at_req)
         local_time_at_res = self.local_time
         if response.status_code != 200:
+            logger.error(
+                f"Failed to get sync response: {response.status_code}, {response.text}"
+            )
             return None
-        sync_res = SyncResponse(**response.json(), resReceivedAt=local_time_at_res)
+        try:
+            sync_res = SyncResponse(**response.json(), resReceivedAt=local_time_at_res)
+        except ValidationError as e:
+            logger.exception("Failed to parse sync response", exc_info=e)
+            return None
         return sync_res.offset
+
+    @property
+    def server_time(self):
+        """Get the server time."""
+        return self.local_time + self.server_time_offset
 
 
 class SyncResponse(BaseModel):
