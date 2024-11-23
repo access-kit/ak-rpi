@@ -2,7 +2,7 @@
 
 import uuid
 
-import netifaces
+import psutil
 
 
 def get_mac_address():
@@ -41,8 +41,7 @@ def get_ip_addresses():
         ip_addresses (dict[str, str]): The ip addresses.
     """
     ip_addresses: dict[str, str] = {}
-    for interface in netifaces.interfaces():
-        addrs = netifaces.ifaddresses(interface)
-        if netifaces.AF_INET in addrs:
-            ip_addresses[interface] = addrs[netifaces.AF_INET][0]["addr"]
+    for interface, addrs in psutil.net_if_addrs().items():
+        for addr in addrs:
+            ip_addresses[interface] = addr.address
     return ip_addresses

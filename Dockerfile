@@ -1,8 +1,8 @@
 # syntax=docker/dockerfile:1
 
-FROM python:3.9-slim-buster
+FROM python:3.12-slim
 
-ENV POETRY_VERSION=1.4 \
+ENV POETRY_VERSION=1.8 \
     POETRY_VIRTUALENVS_CREATE=false
 
 # Install poetry
@@ -18,4 +18,4 @@ RUN poetry install --no-interaction --no-ansi --no-root --no-dev
 # Copy Python code to the Docker image
 COPY ak_rpi /code/ak_rpi/
 
-CMD [ "python", "ak_rpi/foo.py"]
+CMD [ "python", "ak_rpi/main.py"]
