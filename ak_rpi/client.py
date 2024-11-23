@@ -12,7 +12,7 @@ from ak_rpi.errors import (
     NoRegistrationPossibleError,
     RegistrationError,
 )
-from ak_rpi.utils import determine_serial_number, get_ip_addresses, get_mac_address
+from ak_rpi.utils import get_ip_addresses, get_mac_address, get_serial_number
 
 REGISTRATION_PATH = Path("registered")
 
@@ -24,7 +24,7 @@ class Client(BaseModel, arbitrary_types_allowed=True):
     password: SecretStr
     client: httpx.Client
 
-    def register(
+    def register_new(
         self, ip_address: IPvAnyAddress | str, mac_address: str, serial_number: str
     ):
         """Register the player with the server.
@@ -53,7 +53,9 @@ class Client(BaseModel, arbitrary_types_allowed=True):
             msg = f"{response.status_code}: {response.text}"
             raise RegistrationError(msg)
         data = response.json()
-        registration_data = RegistrationData(**data)
+        registration_data = RegistrationData(
+            **data, password=self.password.get_secret_value()
+        )
         with open(REGISTRATION_PATH, "w") as f:
             json.dump(registration_data.model_dump(), f)
 
@@ -149,7 +151,7 @@ class RegistrationData(BaseModel, extra="ignore"):
         Returns:
             player (PlayerSettings): The player.
         """
-        serial_number = determine_serial_number()
+        serial_number = get_serial_number()
         res = client.get_mediaplayer(player_id)
         if res.serialNumber != serial_number:
             raise MismatchedSerialNumberError()
@@ -165,9 +167,9 @@ class RegistrationData(BaseModel, extra="ignore"):
         Returns:
             player (PlayerSettings): The player.
         """
-        serial_number = determine_serial_number()
+        serial_number = get_serial_number()
         mac_address = get_mac_address()
         ip_addresses = get_ip_addresses()
         ip_address = ip_addresses.get("eth0", ip_addresses.get("wlan0", ""))
-        res = client.register(ip_address, mac_address, serial_number)
+        res = client.register_new(ip_address, mac_address, serial_number)
         return res

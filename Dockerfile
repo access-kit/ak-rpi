@@ -18,4 +18,7 @@ RUN poetry install --no-interaction --no-ansi --no-root --no-dev
 # Copy Python code to the Docker image
 COPY ak_rpi /code/ak_rpi/
 
+ENV PYTHONPATH=/code
+ENV PYTHONUNBUFFERED=1
+
 CMD [ "python", "ak_rpi/main.py"]

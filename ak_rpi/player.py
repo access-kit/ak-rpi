@@ -18,9 +18,9 @@ class PlayerSettings(BaseModel, extra="ignore"):
     volume: int = Field(..., ge=0, le=100)
     quietMode: float = Field(..., ge=0, le=1)
     serialNumber: str
-    duration: int = Field(..., ge=0)
-    workId: int = Field(..., ge=0)
-    lastTimestamp: int = Field(..., ge=0)
+    duration: int | None = Field(default=None, ge=0)
+    workId: int | None = Field(default=None, ge=0)
+    lastTimestamp: int | None = Field(default=None, ge=0)
     tenantId: int = Field(..., ge=0)
     client: Client = Field(..., exclude=True)
     ntp: NTP = Field(..., exclude=True)

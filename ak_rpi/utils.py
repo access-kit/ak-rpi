@@ -1,5 +1,6 @@
 """Utility functions."""
 
+import socket
 import uuid
 
 import psutil
@@ -16,7 +17,7 @@ def get_mac_address():
     return mac
 
 
-def determine_serial_number():
+def get_serial_number():
     """Determine the serial number of the player.
 
     Returns:
@@ -43,5 +44,6 @@ def get_ip_addresses():
     ip_addresses: dict[str, str] = {}
     for interface, addrs in psutil.net_if_addrs().items():
         for addr in addrs:
-            ip_addresses[interface] = addr.address
+            if addr.family == socket.AF_INET:
+                ip_addresses[interface] = addr.address
     return ip_addresses
