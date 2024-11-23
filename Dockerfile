@@ -8,6 +8,12 @@ ENV POETRY_VERSION=1.8 \
 # Install poetry
 RUN pip install "poetry==$POETRY_VERSION"
 
+# install ffmpeg and other dependencies for audio
+RUN apt-get update && apt-get install -y \
+    ffmpeg \
+    && rm -rf /var/lib/apt/lists/* \
+    && apt-get clean
+
 # Copy only requirements to cache them in docker layer
 WORKDIR /code
 COPY poetry.lock pyproject.toml /code/
