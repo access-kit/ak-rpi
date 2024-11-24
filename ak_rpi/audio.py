@@ -52,7 +52,7 @@ class AudioPlayer(BaseModel, arbitrary_types_allowed=True):
         """Get the remaining time in ms.
 
         Returns:
-            int: The remaining time in ms.
+            remaining_time (int): The remaining time in ms.
         """
         return self.duration - int(time.perf_counter() * 1000 - self.start_time)
 
