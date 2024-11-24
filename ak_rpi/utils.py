@@ -47,3 +47,24 @@ def get_ip_addresses():
             if addr.family == socket.AF_INET:
                 ip_addresses[interface] = addr.address
     return ip_addresses
+
+
+def select_ip_by_priority(ip_addresses: dict[str, str]) -> str:
+    """Select the best ip address by priority.
+
+    Args:
+        ip_addresses (dict[str, str]): The ip addresses.
+
+    Returns:
+        ip_address (str): The best ip address.
+    """
+    keys_priority = ["ethernet", "eth0", "wi-fi", "wifi", "wlan0"]
+    best_match = next(iter(ip_addresses.values()), "127.0.0.1")
+    best_ix = len(keys_priority)
+    for key, val in ip_addresses.items():
+        if key.lower() in keys_priority:
+            ix = keys_priority.index(key.lower())
+            if ix < best_ix:
+                best_match = val
+                best_ix = ix
+    return best_match

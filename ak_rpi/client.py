@@ -1,6 +1,7 @@
 """Settings for the player."""
 
 import json
+import logging
 from pathlib import Path
 
 import httpx
@@ -12,9 +13,16 @@ from ak_rpi.errors import (
     NoRegistrationPossibleError,
     RegistrationError,
 )
-from ak_rpi.utils import get_ip_addresses, get_mac_address, get_serial_number
+from ak_rpi.utils import (
+    get_ip_addresses,
+    get_mac_address,
+    get_serial_number,
+    select_ip_by_priority,
+)
 
 REGISTRATION_PATH = Path("registered")
+
+logger = logging.getLogger(__name__)
 
 
 class Client(BaseModel, arbitrary_types_allowed=True):
@@ -51,6 +59,7 @@ class Client(BaseModel, arbitrary_types_allowed=True):
         )
         if response.status_code != 200:
             msg = f"{response.status_code}: {response.text}"
+            logger.error(f"Failed to register player: {msg}")
             raise RegistrationError(msg)
         data = response.json()
         registration_data = RegistrationData(
@@ -59,7 +68,8 @@ class Client(BaseModel, arbitrary_types_allowed=True):
         with open(REGISTRATION_PATH, "w") as f:
             json.dump(registration_data.model_dump(), f)
 
-        return PlayerSettings(**data, client=self, ntp=NTP(client=self))
+        player = PlayerSettings(**data, client=self, ntp=NTP(client=self))
+        return player
 
     def get_mediaplayer(self, player_id: int):
         """Get the player settings from the server.
@@ -76,9 +86,11 @@ class Client(BaseModel, arbitrary_types_allowed=True):
         response = self.client.get(f"/api/mediaplayer/{player_id}")
         if response.status_code != 200:
             msg = f"{response.status_code}: {response.text}"
+            logger.error(f"Failed to get player: {msg}")
             raise CouldNotFindPlayerError(msg)
         data = response.json()
-        return PlayerSettings(**data, client=self, ntp=NTP(client=self))
+        player = PlayerSettings(**data, client=self, ntp=NTP(client=self))
+        return player
 
     def get_sync(self, req_sent_at: int):
         """Get the current timestamp from the server."""
@@ -128,12 +140,19 @@ class RegistrationData(BaseModel, extra="ignore"):
         has_password = "password" in data
         registration_exists = REGISTRATION_PATH.exists()
         if not has_password and not registration_exists:
+            logger.error(
+                "No registration possible because no password found in config or registration cache."
+            )
             raise NoRegistrationPossibleError()
         if has_password and not registration_exists:
+            logger.info(
+                "Attempting to register player because password found in config file and no registration exists..."
+            )
             client_base = ClientBase(**data)
             client = client_base.create_client()
             return cls.Register(client)
         else:
+            logger.info("Attempting to load player from registration cache...")
             with open(REGISTRATION_PATH) as f:
                 reg = RegistrationData(**json.load(f))
             client_base = ClientBase(**data)
@@ -170,6 +189,8 @@ class RegistrationData(BaseModel, extra="ignore"):
         serial_number = get_serial_number()
         mac_address = get_mac_address()
         ip_addresses = get_ip_addresses()
-        ip_address = ip_addresses.get("eth0", ip_addresses.get("wlan0", ""))
+        ip_address = select_ip_by_priority(ip_addresses)
+
+        # ip_address = ip_addresses.get("eth0", ip_addresses.get("wlan0", ""))
         res = client.register_new(ip_address, mac_address, serial_number)
         return res
