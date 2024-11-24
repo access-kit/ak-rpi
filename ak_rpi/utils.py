@@ -2,6 +2,7 @@
 
 import socket
 import uuid
+from pathlib import Path
 
 import psutil
 
@@ -68,3 +69,23 @@ def select_ip_by_priority(ip_addresses: dict[str, str]) -> str:
                 best_match = val
                 best_ix = ix
     return best_match
+
+
+def scan_for_exts(
+    dirpath: Path | str, exts: list[str], recursive: bool = False
+) -> list[Path]:
+    """Scan a directory for files with specific extensions.
+
+    Args:
+        dirpath (Path | str): The directory to scan.
+        exts (list[str]): The extensions to look for.
+        recursive (bool): Whether to scan recursively.
+
+    Returns:
+        files (list[Path]): The files found.
+    """
+    dirpath = Path(dirpath)
+    files = []
+    for ext in exts:
+        files.extend(dirpath.glob(f"*.{ext}" if not recursive else f"**/*.{ext}"))
+    return files

@@ -168,3 +168,7 @@ cython_debug/
 
 registered
 config.json
+media/**/*.wav
+media/**/*.mp3
+media/**/*.mp4
+media/**/*.mov

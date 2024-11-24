@@ -98,6 +98,12 @@ class Client(BaseModel, arbitrary_types_allowed=True):
         response = self.client.get(url, params={"reqSentAt": req_sent_at})
         return response
 
+    def put_duration(self, player_id: int, duration: int):
+        """Update the duration of the player's work (in ms)."""
+        url = f"/api/mediaplayer/{player_id}/duration"
+        response = self.client.put(url, json={"duration": duration})
+        return response
+
 
 class ClientBase(BaseModel, extra="ignore"):
     """Base settings for the client."""

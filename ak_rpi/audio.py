@@ -28,8 +28,11 @@ class AudioPlayer(BaseModel, arbitrary_types_allowed=True):
             player (AudioPlayer): The audio player
         """
         logger.info(f"Playing {audio_file}")
+        # initialize the mixer
+        if not pygame.mixer.get_init():
+            pygame.mixer.init()
         sound = pygame.mixer.Sound(audio_file)
-        duration = int(mediainfo(audio_file)["duration"] * 1000)
+        duration = int(float(mediainfo(audio_file)["duration"]) * 1000)
         channel = pygame.mixer.find_channel()
         if channel is None:
             msg = "No available channels."
