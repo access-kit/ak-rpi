@@ -11,7 +11,7 @@ from pydub.utils import mediainfo
 logger = logging.getLogger(__name__)
 
 
-class AudioPlayer(BaseModel):
+class AudioPlayer(BaseModel, arbitrary_types_allowed=True):
     """A class for playing audio."""
 
     channel: pygame.mixer.Channel
