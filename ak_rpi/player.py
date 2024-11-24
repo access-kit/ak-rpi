@@ -102,22 +102,40 @@ class PlayerSettings(BaseModel, extra="ignore"):
         self.ntp.sync()
         return
 
+    def handle_audio_starting(self):
+        """Handle the audio `starting` state and transitions to the `waiting_to_sync` state."""
+        if self.audio is None:
+            return
+        self.audio.stop()
+        self.audio.play()
+
+        st = self.ntp.server_time
+        # currently a magic number to account for audio driver latency
+        # and pygame overhead
+        # can also be tuned at the Work level using dilation.
+        latency = 100
+        self.lastTimestamp = st + latency
+        self.client.put_lastTimestamp(self.id, self.lastTimestamp)
+        self.media_state = "waiting_to_sync"
+
+    def handle_audio_waiting_to_sync(self):
+        """Handle the audio `waiting_to_sync` state and transitions to the `syncing` state."""
+        if self.audio is None:
+            return
+        remaining_time = self.audio.remaining_ms
+        sync_time = min(20000, self.audio.duration)
+        self.media_state = (
+            "waiting_to_sync" if remaining_time > sync_time else "syncing"
+        )
+
     def audio_machine(self):
         """The audio state machine for cooperative multi-tasking."""
         if self.audio is None:
             return
         if self.media_state == "starting":
-            self.audio.stop()
-            self.audio.play()
-            self.lastTimestamp = self.ntp.server_time
-            # TODO: submit timestamp
-            self.media_state = "waiting_to_sync"
+            self.handle_audio_starting()
         if self.media_state == "waiting_to_sync":
-            remaining_time = self.audio.remaining_ms
-            sync_time = min(20000, self.audio.duration)
-            self.media_state = (
-                "waiting_to_loop" if remaining_time > sync_time else "syncing"
-            )
+            self.handle_audio_waiting_to_sync()
         if self.media_state == "syncing":
             self.ntp.sync()
             self.media_state = "waiting_to_loop"

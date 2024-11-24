@@ -12,7 +12,8 @@ logger = logging.getLogger(__name__)
 
 def monotonic_time_ms():
     """Get the monotonic time."""
-    return int(time.monotonic() * 1000)
+    # return int(time.monotonic() * 1000)
+    return int(time.perf_counter() * 1000)
 
 
 class NTP(BaseModel):

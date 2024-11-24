@@ -104,6 +104,12 @@ class Client(BaseModel, arbitrary_types_allowed=True):
         response = self.client.put(url, json={"duration": duration})
         return response
 
+    def put_lastTimestamp(self, player_id: int, lastTimestamp: int):
+        """Update the lastTimestamp of the player's work (in ms)."""
+        url = f"/api/mediaplayer/{player_id}/timestamp"
+        response = self.client.put(url, json={"lastTimestamp": lastTimestamp})
+        return response
+
 
 class ClientBase(BaseModel, extra="ignore"):
     """Base settings for the client."""
