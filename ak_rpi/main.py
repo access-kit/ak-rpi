@@ -7,8 +7,9 @@ from ak_rpi.errors import BaseRegistrationError
 
 logger = logging.getLogger(__name__)
 
-if __name__ == "__main__":
-    logging.basicConfig(level=logging.INFO)
+
+def main():
+    """Main function."""
     try:
         player = RegistrationData.FromConfig()
     except BaseRegistrationError as e:
@@ -19,3 +20,8 @@ if __name__ == "__main__":
     else:
         player.setup()
         player.run()
+
+
+if __name__ == "__main__":
+    logging.basicConfig(level=logging.INFO)
+    main()

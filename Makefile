@@ -36,6 +36,15 @@ docs-test: ## Test if documentation can be built without warnings or errors
 docs: ## Build and serve the documentation
 	@poetry run mkdocs serve
 
+.PHONY: run
+run: ## Run the application
+	@poetry run ak-rpi
+
+.PHONY: install-and-run
+install-and-run:
+	@poetry install
+	@poetry run ak-rpi
+
 .PHONY: help
 help:
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-20s\033[0m %s\n", $$1, $$2}'
