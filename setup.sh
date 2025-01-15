@@ -18,7 +18,7 @@ REPO_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 # Install system dependencies
 log "Installing system dependencies..."
 sudo apt update
-sudo apt install -y pipx
+sudo apt install -y pipx ffmpeg libsdl2-mixer-2.0-0 libsdl2-2.0-0 libsdl2-mixer-dev python3-sdl2
 pipx ensurepath
 
 # Install poetry using pipx
