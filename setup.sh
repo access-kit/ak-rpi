@@ -63,7 +63,8 @@ fi
 log "Autostart Options:"
 log "1. LXDE autostart - Recommended if you're using the Raspberry Pi with a display and desktop environment"
 log "2. systemd service - Recommended for headless setups or when running as a background service"
-read -p "Choose autostart method [1/2]: " START_CHOICE
+log "3. Skip autostart setup"
+read -p "Choose autostart method [1/2/3]: " START_CHOICE
 
 if [ "$START_CHOICE" = "1" ]; then
     # LXDE autostart setup
@@ -73,7 +74,7 @@ if [ "$START_CHOICE" = "1" ]; then
     # Add our command to autostart
     echo "@lxterminal -e \"cd $REPO_DIR && poetry run ak-rpi\"" >> "$AUTOSTART_DIR"
     log "Added to LXDE autostart at $AUTOSTART_DIR"
-else
+elif [ "$START_CHOICE" = "2" ]; then
     # systemd service setup
     SERVICE_NAME="ak-rpi.service"
     SERVICE_FILE="/etc/systemd/system/$SERVICE_NAME"
@@ -100,6 +101,8 @@ EOF
     sudo systemctl enable "$SERVICE_NAME"
     sudo systemctl start "$SERVICE_NAME"
     log "Created and started systemd service $SERVICE_NAME"
+else
+    log "Skipping autostart setup. You'll need to start the service manually using 'poetry run ak-rpi'"
 fi
 
 log "Setup complete! Would you like to test the system now? (y/n)"
