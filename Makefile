@@ -45,6 +45,12 @@ install-and-run:
 	@poetry install
 	@poetry run ak-rpi
 
+.PHONY: setup
+setup: ## Run the complete setup process for Raspberry Pi
+	@echo "🚀 Starting Raspberry Pi setup process"
+	@chmod +x setup.sh
+	@./setup.sh
+
 .PHONY: help
 help:
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-20s\033[0m %s\n", $$1, $$2}'
