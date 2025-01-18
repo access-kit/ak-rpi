@@ -52,6 +52,12 @@ setup: ## Run the complete setup process for Raspberry Pi
 	@chmod +x setup.sh
 	@./setup.sh
 
+.PHONY: configure-audio
+configure-audio: ## Configure the default audio output device (run with sudo for system-wide config)
+	@echo "🎵 Configuring audio output device"
+	@chmod +x configure-audio.sh
+	@./configure-audio.sh
+
 .PHONY: help
 help:
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-20s\033[0m %s\n", $$1, $$2}'
