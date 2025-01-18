@@ -69,22 +69,11 @@ else
     log "Skipping media file download. Please place your media file in $REPO_DIR/media when you have it."
 fi
 
-# Ask user for autostart preference
-log "Autostart Options:"
-log "1. LXDE autostart - Recommended if you're using the Raspberry Pi with a display and desktop environment"
-log "2. systemd service - Recommended for headless setups or when running as a background service"
-log "3. Skip autostart setup"
-read -p "Choose autostart method [1/2/3]: " START_CHOICE
+# Ask about autostart setup
+log "Would you like to setup automatically starting the application when the device powers on (this will create a systemd service)? [y/n]"
+read -p "> " START_CHOICE
 
-if [ "$START_CHOICE" = "1" ]; then
-    # LXDE autostart setup
-    AUTOSTART_DIR="$HOME/.config/lxsession/LXDE-pi/autostart"
-    mkdir -p "$(dirname "$AUTOSTART_DIR")"
-
-    # Add our command to autostart
-    echo "@lxterminal -e \"cd $REPO_DIR && poetry run ak-rpi\"" >> "$AUTOSTART_DIR"
-    log "Added to LXDE autostart at $AUTOSTART_DIR"
-elif [ "$START_CHOICE" = "2" ]; then
+if [ "$START_CHOICE" = "y" ]; then
     # systemd service setup
     SERVICE_NAME="ak-rpi.service"
     SERVICE_FILE="/etc/systemd/system/$SERVICE_NAME"

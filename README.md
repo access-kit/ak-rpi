@@ -13,12 +13,12 @@ This is a repository for synchronizing Raspberry Pis with AccessKit.
 
 ## Getting Started: Linux/Raspberry Pi Mode
 
-This instructions will handle automatically installing the required dependencies, configuring the connection to AccessKit, and setting up autostarting via systemd or LXDE autostart. They assume you have already setup your Raspberry Pi and connected it to the internet (either through Ethernet or WiFi).
+This instructions will handle automatically installing the required dependencies, configuring the connection to AccessKit, and setting up autostarting via systemd or running manually. They assume you have already setup your Raspberry Pi and connected it to the internet (either through Ethernet or WiFi).
 
 1. Open a terminal and navigate to the directory where you want to clone the repository; the default home location is typically fine.
 1. First, download the repository using `git clone https://github.com/access-kit/ak-rpi.git` which will clone the repository into a directory named `ak-rpi`.
 1. Next, navigate into the `ak-rpi` directory using `cd ak-rpi`
-1. Finally, run `make setup`, which will install the necessary dependencies and configure the connection to AccessKit, along with optional autostart setup.
+1. Finally, run `make setup`, which will install the necessary dependencies and configure the connection to AccessKit, along with optional autostart via a systemd service.
 
 ### Audio Configuration
 
