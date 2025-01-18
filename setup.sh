@@ -82,7 +82,9 @@ if [ "$START_CHOICE" = "y" ]; then
     sudo tee "$SERVICE_FILE" > /dev/null << EOF
 [Unit]
 Description=AK-RPI Service
-After=network.target
+After=network.target sound.target alsa-restore.service
+Wants=sound.target
+Requires=alsa-restore.service
 
 [Service]
 Type=simple
