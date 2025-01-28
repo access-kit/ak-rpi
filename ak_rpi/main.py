@@ -37,13 +37,10 @@ def offline_mode():
 def main():
     """Main function."""
     logging.basicConfig(level=logging.INFO)
-    print("Testing audio offline mode...")
-    # main()
-    offline_mode()
-    return
 
     try:
         player = RegistrationData.FromConfig()
+        _x = 1 / 0
     except BaseRegistrationError as e:
         logger.exception(
             "Failed to acquire player settings; will start in offline mode.", exc_info=e
