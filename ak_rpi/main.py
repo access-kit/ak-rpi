@@ -26,15 +26,11 @@ def offline_mode():
     fpath = paths[0].as_posix()
     logger.info(f"Found audio file: {fpath}")
     audio = AudioPlayer.Load(fpath)
-    logger.info("Playing audio file...")
     while True:
         audio.stop()
         audio.play()
-        import time
 
         while audio.remaining_ms > 0:
-            time.sleep(10)
-            print("hello")
             pass
 
 
