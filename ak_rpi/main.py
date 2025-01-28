@@ -40,6 +40,12 @@ def offline_mode():
 
 def main():
     """Main function."""
+    logging.basicConfig(level=logging.INFO)
+    print("Testing audio offline mode...")
+    # main()
+    offline_mode()
+    return
+
     try:
         player = RegistrationData.FromConfig()
     except BaseRegistrationError as e:
@@ -58,7 +64,4 @@ def main():
 
 
 if __name__ == "__main__":
-    logging.basicConfig(level=logging.INFO)
-    print("Testing audio offline mode...")
-    # main()
-    offline_mode()
+    main()
