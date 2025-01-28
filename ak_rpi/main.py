@@ -40,6 +40,11 @@ def main():
             "Failed to acquire player settings; will start in offline mode.", exc_info=e
         )
         offline_mode()
+    except Exception as e:
+        logger.exception(
+            "Failed to acquire player settings; will start in offline mode.", exc_info=e
+        )
+        offline_mode()
     else:
         player.setup()
         player.run()
