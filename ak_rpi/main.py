@@ -27,7 +27,11 @@ def offline_mode():
     while True:
         audio.stop()
         audio.play()
+        import time
+
         while audio.remaining_ms > 0:
+            time.sleep(10)
+            print("hello")
             pass
 
 
