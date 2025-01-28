@@ -59,5 +59,6 @@ def main():
 
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO)
+    print("Testing audio offline mode...")
     # main()
     offline_mode()
