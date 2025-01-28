@@ -17,13 +17,16 @@ def offline_mode():
     from ak_rpi.player import MediaDir
     from ak_rpi.utils import scan_for_exts
 
+    logger.info(f"Starting offline mode, searching for audio files in {MediaDir}...")
     paths = scan_for_exts(MediaDir, ["mp3", "wav"], recursive=True)
+    logger.info(f"Found {len(paths)} audio files.")
     if len(paths) == 0:
         logger.exception("No audio files found.")
         return
     fpath = paths[0].as_posix()
     logger.info(f"Found audio file: {fpath}")
     audio = AudioPlayer.Load(fpath)
+    logger.info("Playing audio file...")
     while True:
         audio.stop()
         audio.play()
